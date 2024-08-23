@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".modeFragment.firstMode.FirstMode">
-
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -67,46 +69,52 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView22" />
 
             <EditText
-                android:id="@+id/editTextNumber"
+                android:id="@+id/frequency"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="24dp"
                 android:background="@drawable/custom_input"
                 android:ems="10"
                 android:inputType="number"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView21"
-                app:layout_constraintEnd_toEndOf="@+id/imageView7"
+                app:layout_constraintEnd_toEndOf="@+id/plus"
                 app:layout_constraintStart_toEndOf="@+id/textView21"
                 app:layout_constraintTop_toTopOf="@+id/textView21" />
 
             <EditText
-                android:id="@+id/editTextNumber2"
+                android:id="@+id/pulse_width"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="24dp"
                 android:background="@drawable/custom_input"
                 android:ems="10"
                 android:inputType="number"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView22"
-                app:layout_constraintEnd_toEndOf="@+id/editTextNumber"
+                app:layout_constraintEnd_toEndOf="@+id/frequency"
                 app:layout_constraintStart_toEndOf="@+id/textView22"
                 app:layout_constraintTop_toTopOf="@+id/textView22" />
 
             <EditText
-                android:id="@+id/editTextNumber3"
+                android:id="@+id/time"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="24dp"
                 android:background="@drawable/custom_input"
                 android:ems="10"
                 android:inputType="number"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView23"
-                app:layout_constraintEnd_toEndOf="@+id/editTextNumber2"
+                app:layout_constraintEnd_toEndOf="@+id/pulse_width"
                 app:layout_constraintStart_toEndOf="@+id/textView23"
                 app:layout_constraintTop_toTopOf="@+id/textView23" />
 
             <EditText
-                android:id="@+id/editTextNumber4"
+                android:id="@+id/amplitude"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="8dp"
@@ -114,31 +122,34 @@
                 android:background="@drawable/custom_input"
                 android:ems="10"
                 android:inputType="number"
+                android:paddingLeft="15dp"
+                android:paddingRight="10dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView20"
-                app:layout_constraintEnd_toStartOf="@+id/imageView7"
-                app:layout_constraintStart_toEndOf="@+id/imageView6"
+                app:layout_constraintEnd_toStartOf="@+id/plus"
+                app:layout_constraintStart_toEndOf="@+id/minus"
                 app:layout_constraintTop_toTopOf="@+id/textView20"
                 app:layout_constraintVertical_bias="0.571" />
 
             <ImageView
-                android:id="@+id/imageView6"
+                android:id="@+id/minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/minus"
-                app:layout_constraintBottom_toBottomOf="@+id/editTextNumber4"
-                app:layout_constraintStart_toStartOf="@+id/editTextNumber"
-                app:layout_constraintTop_toTopOf="@+id/editTextNumber4" />
+                app:layout_constraintBottom_toBottomOf="@+id/amplitude"
+                app:layout_constraintStart_toStartOf="@+id/pulse_width"
+                app:layout_constraintTop_toTopOf="@+id/amplitude" />
 
             <ImageView
-                android:id="@+id/imageView7"
+                android:id="@+id/plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
                 android:src="@drawable/plus"
-                app:layout_constraintBottom_toBottomOf="@+id/editTextNumber4"
+                app:layout_constraintBottom_toBottomOf="@+id/amplitude"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/editTextNumber4" />
+                app:layout_constraintTop_toTopOf="@+id/amplitude" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </FrameLayout>

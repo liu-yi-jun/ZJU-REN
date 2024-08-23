@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/stimulate_bg_grey"
     tools:context=".SelfTest">
 
     <include
@@ -13,13 +13,14 @@
         layout="@layout/toolbar_custom" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/labBleState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="蓝牙已连接"
-        android:textColor="#666666"
+        android:text="蓝牙未连接"
+        android:textColor="#ED9E57"
         android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,27 +39,27 @@
         tools:srcCompat="@drawable/battery" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/labBattery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginTop="7dp"
-        android:text="当前电量：30%"
+        android:text="当前电量：0%"
         android:textColor="#000000"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/labTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
-        android:text="预计还可使用4.5h"
+        android:text="预计还可使用0min"
         android:textColor="#070707"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintStart_toStartOf="@+id/labBattery"
+        app:layout_constraintTop_toBottomOf="@+id/labBattery" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -73,10 +74,10 @@
         tools:srcCompat="@drawable/resistor" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/labResistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="74dp"
+        android:layout_marginStart="80dp"
         android:text="正常"
         android:textColor="#000000"
         android:textSize="16sp"
@@ -86,7 +87,7 @@
         app:layout_constraintVertical_bias="0.50" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/recheck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
@@ -128,5 +129,15 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <include layout="@layout/app_name" />
+
+    <ImageView
+        android:id="@+id/resistanceStatues"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:background="@drawable/resistancegrey"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

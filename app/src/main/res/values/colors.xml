@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#E1E0E7</color>
     <color name="bg_grey">#F3F3FA</color>
+    <color name="stimulate_bg_grey">#FFFEFF</color>
     <color name="border_base">#dcdfe6</color>
     <color name="border_light">#e4e7ed</color>
     <color name="radio_button_selected_color">#FFFFFFFF</color>
