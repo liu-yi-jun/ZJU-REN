@@ -56,7 +56,8 @@ public class BlueItemAdapter extends BaseAdapter {
         //        设置文本
         BlueItemDefine item = (BlueItemDefine) getItem(i);
         holder.blue_name.setText(item.getBlueName());
-        holder.device_id.setText(item.getDeviceId());
+        String mac = item.getDeviceId().replaceAll("(.{2})(?!$)", "$1:");
+        holder.device_id.setText(mac);
         holder.blue_decibel.setText(item.getBlueDecibel() + "");
 //
 //        view.setOnClickListener(new View.OnClickListener() {

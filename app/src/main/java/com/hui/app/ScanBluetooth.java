@@ -2,6 +2,7 @@ package com.hui.app;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,6 +57,7 @@ public class ScanBluetooth extends AppCompatActivity implements EasyPermissions.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityScanBluetoothBinding.inflate(getLayoutInflater());
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(binding.getRoot());
         initBar();
         initView();
@@ -82,8 +84,9 @@ public class ScanBluetooth extends AppCompatActivity implements EasyPermissions.
     private void initBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().setStatusBarColor(getColor(R.color.bg_grey)); //设置状态栏背景色
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //设置状态栏字体颜色
         }
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //设置状态栏字体颜色
+
         Toolbar toolbar = binding.scanToolbar.getRoot();
         TextView toolbarTitle  = toolbar.findViewById(R.id.toolbar_title);
         toolbar.setBackgroundResource(R.color.bg_grey);
@@ -124,7 +127,7 @@ public class ScanBluetooth extends AppCompatActivity implements EasyPermissions.
         new Handler().postDelayed(() -> {
             deviceListDataShow.clear();
             for (DeviceInfo tempDevice : deviceListData) {
-                deviceListDataShow.add(new BlueItemDefine(tempDevice.name, tempDevice.rssi,tempDevice.id));
+                deviceListDataShow.add(new BlueItemDefine(tempDevice.name, tempDevice.rssi,tempDevice.mac));
             }
             adapter.notifyDataSetChanged();
             listRefresh();
@@ -144,6 +147,7 @@ public class ScanBluetooth extends AppCompatActivity implements EasyPermissions.
                 }
             }
             if (!isExist) {
+
                 deviceListData.add(new DeviceInfo(id, name, mac, rssi));
             }
         }));

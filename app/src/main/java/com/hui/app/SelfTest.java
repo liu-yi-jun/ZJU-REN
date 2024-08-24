@@ -1,7 +1,9 @@
 package com.hui.app;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -20,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.hui.app.databinding.ActivitySelfTestBinding;
 import com.hui.app.define.BlueItemDefine;
 import com.hui.app.utils.LevelAndState;
+import com.hui.app.utils.Util;
 
 public class SelfTest extends AppCompatActivity implements View.OnClickListener {
 
@@ -38,10 +41,17 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         binding = ActivitySelfTestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initBar();
         initView();
-        initBLE();
     }
+
+    @Override
+    public void onResume() {
+        initBLE();
+        super.onResume();
+    }
+
 
     private void initBLE() {
         ECBLE.setChineseTypeUTF8();
@@ -51,24 +61,29 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
             showAlert("提示","蓝牙断开连接",()->{});
         }));
         ECBLE.onBLECharacteristicValueChange((String str,String strHex)-> runOnUiThread(()->{
-            LevelAndState levelAndState = new LevelAndState(strHex);
-            labBattery.setText("当前电量：" + (int)(levelAndState.getP() * 100) + "%");
-            float time = levelAndState.getP() * 4.2f / 60;
-            if (time > 1.0) {
-                labTime.setText(String.format("预计还可使用%.1fh", time));
-            } else {
-                labTime.setText(String.format("预计还可使用%.0fmin", time * 60));
-            }
-            if (levelAndState.getSetState().equals("0")) {
-                labResistance.setText("正常");
-                resistanceStatues.setBackgroundResource(R.drawable.resistancegreen);
-            } else {
-                resistanceStatues.setBackgroundResource(R.drawable.resistanceorange);
-                if (levelAndState.getSetState().equals("1")) {
-                    labResistance.setText("偏低");
+            if(strHex.contains("2320503A")) { //# P:
+                LevelAndState levelAndState = new LevelAndState(strHex);
+                labBattery.setText("当前电量：" + (int) (levelAndState.getP() * 100) + "%");
+                float time = levelAndState.getP() * 4.2f / 60;
+                if (time > 1.0) {
+                    labTime.setText(String.format("预计还可使用%.1fh", time));
                 } else {
-                    labResistance.setText("偏高");
+                    labTime.setText(String.format("预计还可使用%.0fmin", time * 60));
                 }
+                if (levelAndState.getSetState().equals("0")) {
+                    labResistance.setText("正常");
+                    resistanceStatues.setBackgroundResource(R.drawable.resistancegreen);
+                } else {
+                    resistanceStatues.setBackgroundResource(R.drawable.resistanceorange);
+                    if (levelAndState.getSetState().equals("1")) {
+                        labResistance.setText("偏低");
+                    } else {
+                        labResistance.setText("偏高");
+                    }
+                }
+            }
+            if(strHex.contains("2320532023")) { //# S # 短路
+                Util.showAlertRSDialog(this);
             }
         }));
 
@@ -81,8 +96,7 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
                 toolbarTitle.setText(connectDevice.getBlueName());
                 sendCheck();
             }
-        }, 1000);
-
+        }, 500);
     }
 
     private void sendCheck() {
@@ -117,7 +131,10 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
 
 
     private void initBar() {
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //设置状态栏字体颜色
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().setStatusBarColor(getColor(R.color.stimulate_bg_grey));
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //设置状态栏字体颜色
+        }
         Toolbar toolbar = binding.scanToolbar.getRoot();
         toolbarTitle  = toolbar.findViewById(R.id.toolbar_title);
         setSupportActionBar(toolbar);

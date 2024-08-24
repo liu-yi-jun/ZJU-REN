@@ -2,6 +2,8 @@ package com.hui.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +30,7 @@ import com.hui.app.modeFragment.firstStimulate.FirstStimulate;
 import com.hui.app.modeFragment.secondStimulate.SecondStimulate;
 import com.hui.app.utils.LevelAndState;
 import com.hui.app.utils.TimeUtil;
+import com.hui.app.utils.Util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,7 +74,7 @@ public class Stimulate extends AppCompatActivity implements View.OnClickListener
 //                finish();
 //            }
 //        });
-        initBLE();
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initBar();
         initView();
         initTimeData();
@@ -80,8 +83,21 @@ public class Stimulate extends AppCompatActivity implements View.OnClickListener
 
     @Override
     public void onResume() {
+        initBLE();
         initModel();
+        getInfo();
         super.onResume();
+    }
+
+    private void getInfo() {
+        List<String> arrTime = new ArrayList<>(timeData.getTimeArr());
+        if(!arrTime.isEmpty()) {
+            String strTime = arrTime.get(arrTime.size() - 1);
+            binding.labLast.setText(strTime);
+            binding.labNext.setText(nextTime(strTime));
+        }
+        int count = arrTime.size() > 8 ? 8 : arrTime.size();
+        binding.labTime.setText(String.valueOf(8 - count));
     }
 
     private void initTimeData() {
@@ -107,15 +123,20 @@ public class Stimulate extends AppCompatActivity implements View.OnClickListener
             showAlert("提示","蓝牙断开连接",()->{});
         }));
         ECBLE.onBLECharacteristicValueChange((String str,String strHex)-> runOnUiThread(()->{
-            LevelAndState levelAndState = new LevelAndState(strHex);
-            if (levelAndState.getSetState().equals("0")) {
+            if(strHex.contains("2320503A")) { //# P:
+                LevelAndState levelAndState = new LevelAndState(strHex);
+                if (levelAndState.getSetState().equals("0")) {
 //                toStartStimulate();
-            } else {
-                Toast.makeText(this, "电极可能断开，请检查阻抗", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "电极可能断开，请检查阻抗", Toast.LENGTH_SHORT).show();
+                    toStopStimulate();
+                }
+            }
+            if(strHex.contains("2320532023")) { //# S # 短路
+                Util.showAlertRSDialog(this);
                 toStopStimulate();
             }
         }));
-
     }
 
         private void initFragment() {
@@ -144,8 +165,8 @@ public class Stimulate extends AppCompatActivity implements View.OnClickListener
     private void initBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().setStatusBarColor(getColor(R.color.stimulate_bg_grey));
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //设置状态栏字体颜色
         }
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //设置状态栏字体颜色
     }
 
 //    private void onMyBackPressed(boolean isEnable, final Runnable callback) {

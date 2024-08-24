@@ -11,20 +11,25 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.ParcelUuid;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.hui.app.define.BlueItemDefine;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import pub.devrel.easypermissions.EasyPermissions;
 
 interface ECBluetoothAdapterStateChangeCallback {
@@ -48,6 +53,7 @@ public class ECBLE {
     private static final String ECBLEChineseTypeGBK = "gbk";
     private static String ecBLEChineseType = ECBLEChineseTypeUTF8;
     static BlueItemDefine connectDevice;
+    static Context context;
 
     static void setChineseTypeUTF8() {
         ecBLEChineseType = ECBLEChineseTypeUTF8;
@@ -144,20 +150,45 @@ public class ECBLE {
     static void onBluetoothDeviceFound(ECBluetoothDeviceFoundCallback cb) {
         ecBluetoothDeviceFoundCallback = cb;
     }
-
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+    @SuppressLint("MissingPermission")
     private static final BluetoothAdapter.LeScanCallback leScanCallback = (BluetoothDevice bluetoothDevice, int rssi, byte[] bytes) -> {
         try {
 //        Log.e("bytes",bytesToHexString(bytes));
 //        String name = getBluetoothName(bytes);
-            @SuppressLint("MissingPermission")
+
             String name = bluetoothDevice.getName();
             if (name == null || name.isEmpty()) return;
 
             String mac = bluetoothDevice.getAddress();
             if (mac == null || mac.isEmpty()) return;
             mac = mac.replace(":", "");
+            // 解析广告数据
+//            byte[] uuidBytes = new byte[16];
+//            System.arraycopy(bytes, 9, uuidBytes, 0, 16);
+//            String uuid = bytesToHex(uuidBytes);
+//            // uuid就是设备的UUID
+//            String uuid32 = uuid.substring(0, 8) + "-" + uuid.substring(8, 12) + "-" + uuid.substring(12, 16) + "-" + uuid.substring(16, 20) + "-" + uuid.substring(20, 32);
+//            System.out.println("uuid"+uuid32);
+            // uuid就是设备的UUID
+
+//            ParcelUuid[] uuids = bluetoothDevice.getUuids();
+//            System.out.println("uuids"+uuids);
+//            if (uuids != null && uuids.length > 0) {
+//                String uuid = uuids[0].getUuid().toString();
+//                System.out.println("uuid"+uuid);
+//                // do something with the UUID
+//            }
+
 
 //        Log.e("bleDiscovery", name + "|" + mac +"|"+ rssi);
+
 
             boolean isExist = false;
             for (BluetoothDevice tempDevice : deviceList) {
@@ -279,27 +310,30 @@ public class ECBLE {
 //                                notifyBLECharacteristicValueChange(characteristic);
 //                                Thread.sleep(800);
 //                            }
-                            //notify
-                            if (characteristic.getUuid().toString().equals(ecCharacteristicNotifyUUID)) {
-                                notifyBLECharacteristicValueChange(characteristic);
-                            }
-//                            //write
-                            if (characteristic.getUuid().toString().equals(ecCharacteristicWriteUUID)) {
-                                ecCharacteristicWrite = characteristic;
-                            }
-//                            boolean isNotifiable  = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
-//                            boolean isWritable = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0
-//                                    || (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) != 0;
-
-//                            if (isNotifiable) {
-//                                // 特征支持通知操作
+//                            //notify
+//                            if (characteristic.getUuid().toString().equals(ecCharacteristicNotifyUUID)) {
 //                                notifyBLECharacteristicValueChange(characteristic);
 //                            }
-
-//                            if (isWritable) {
-//                                // 这个特性是可写的
+////                            //write
+//                            if (characteristic.getUuid().toString().equals(ecCharacteristicWriteUUID)) {
 //                                ecCharacteristicWrite = characteristic;
 //                            }
+                            System.out.println("isNotifiable"+characteristic.getUuid()+":"+(characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY));
+                            System.out.println("isWritable"+characteristic.getUuid()+":"+(characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE));
+
+                            boolean isNotifiable  = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
+                            boolean isWritable = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0
+                                    || (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) != 0;
+
+                            if (isNotifiable) {
+                                // 特征支持通知操作
+                                notifyBLECharacteristicValueChange(characteristic);
+                            }
+
+                            if (isWritable) {
+                                // 这个特性是可写的
+                                ecCharacteristicWrite = characteristic;
+                            }
                         }
                     }
                 } catch (Throwable ignored) {
@@ -404,6 +438,7 @@ public class ECBLE {
     }
 
     static void createBLEConnection(Context ctx, BlueItemDefine blueItem) {
+        context = ctx;
         String id = blueItem.getDeviceId();
         connectDevice = blueItem;
         reconnectTime = 0;
@@ -429,7 +464,7 @@ public class ECBLE {
     }
 
     @SuppressLint("MissingPermission")
-    static void writeBLECharacteristicValue(String data, boolean isHex) {
+    public static void writeBLECharacteristicValue(String data, boolean isHex) {
         byte[] byteArray;
         if (isHex) {
             byteArray = hexStrToBytes(data);

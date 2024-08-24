@@ -2,6 +2,7 @@ package com.hui.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import com.hui.app.modeFragment.firstMode.FirstMode;
 import com.hui.app.modeFragment.secondMode.SecondMode;
 import com.hui.app.model.DoctorModel;
 import com.hui.app.utils.TimeUtil;
+import com.hui.app.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,7 @@ public class DoctorMode extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDoctorModeBinding.inflate(getLayoutInflater());
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(binding.getRoot());
         initBar();
         initsegmented();
@@ -68,7 +71,9 @@ public class DoctorMode extends AppCompatActivity implements View.OnClickListene
             showAlert("提示","蓝牙断开连接",()->{});
         }));
         ECBLE.onBLECharacteristicValueChange((String str,String strHex)-> runOnUiThread(()->{
-
+            if(strHex.contains("2320532023")) { //# S # 短路
+                Util.showAlertRSDialog(this);
+            }
         }));
         BlueItemDefine connectDevice = ECBLE.getConnectDevice();
         toolbarTitle.setText(connectDevice.getBlueName());
@@ -110,8 +115,9 @@ public class DoctorMode extends AppCompatActivity implements View.OnClickListene
     private void initBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().setStatusBarColor(getColor(R.color.bg_grey)); //设置状态栏背景色
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //设置状态栏字体颜色
         }
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //设置状态栏字体颜色
+
         Toolbar toolbar = binding.scanToolbar.getRoot();
         toolbarTitle  = toolbar.findViewById(R.id.toolbar_title);
         toolbar.setBackgroundResource(R.color.bg_grey);
