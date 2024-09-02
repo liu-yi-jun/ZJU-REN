@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -301,11 +302,16 @@ public class ECBLE {
             new Thread(() -> {
                 try {
                     for (BluetoothGattService service : bluetoothGattServices) {
-                        Log.e("ble-service", "UUID=" + service.getUuid().toString());
-                        List<BluetoothGattCharacteristic> listGattCharacteristic = service.getCharacteristics();
-                        for (BluetoothGattCharacteristic characteristic : listGattCharacteristic) {
-                            Log.e("ble-char", "UUID=:" + characteristic.getUuid().toString());
-                            //notify
+//                        String serviceUUID = service.getUuid().toString();
+                        UUID uuid = service.getUuid();
+                        if (uuid.getLeastSignificantBits() != 0x1800 &&
+                                uuid.getLeastSignificantBits() != 0x1801) {
+                            // 这不是 GAP 或 GATT 服务
+                            Log.e("ble-service", "UUID=" + uuid.toString());
+                            List<BluetoothGattCharacteristic> listGattCharacteristic = service.getCharacteristics();
+                            for (BluetoothGattCharacteristic characteristic : listGattCharacteristic) {
+                                Log.e("ble-char", "UUID=:" + characteristic.getUuid().toString());
+                                //notify
 //                            if ((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
 //                                notifyBLECharacteristicValueChange(characteristic);
 //                                Thread.sleep(800);
@@ -318,23 +324,29 @@ public class ECBLE {
 //                            if (characteristic.getUuid().toString().equals(ecCharacteristicWriteUUID)) {
 //                                ecCharacteristicWrite = characteristic;
 //                            }
-                            System.out.println("isNotifiable"+characteristic.getUuid()+":"+(characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY));
-                            System.out.println("isWritable"+characteristic.getUuid()+":"+(characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE));
+                                System.out.println("isNotifiable"+characteristic.getUuid()+":"+(characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY));
+                                System.out.println("isWritable"+characteristic.getUuid()+":"+(characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE));
 
-                            boolean isNotifiable  = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
-                            boolean isWritable = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0
-                                    || (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) != 0;
+                                boolean isNotifiable  = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
+                                boolean isWritable = (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0
+                                        || (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) != 0;
 
-                            if (isNotifiable) {
-                                // 特征支持通知操作
-                                notifyBLECharacteristicValueChange(characteristic);
-                            }
+                                if (isNotifiable) {
+                                    // 特征支持通知操作
+                                    notifyBLECharacteristicValueChange(characteristic);
+                                }
 
-                            if (isWritable) {
-                                // 这个特性是可写的
-                                ecCharacteristicWrite = characteristic;
+                                if (isWritable) {
+                                    // 这个特性是可写的
+                                    ecCharacteristicWrite = characteristic;
+                                }
                             }
                         }
+//                        Log.e("ble-service", "UUID=" + serviceUUID);
+//                        if(!serviceUUID.equals("00001801-0000-1000-8000-00805f9b34fb") && !serviceUUID.equals("00001800-0000-1000-8000-00805f9b34fb")) {
+//
+//                        }
+
                     }
                 } catch (Throwable ignored) {
                 }

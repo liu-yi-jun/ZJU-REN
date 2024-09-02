@@ -71,9 +71,16 @@ public class ScanBluetooth extends AppCompatActivity implements EasyPermissions.
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+
+    }
+
+
+    @Override
     protected void onStart() {
         super.onStart();
-
         deviceListData.clear();
         deviceListDataShow.clear();
         adapter.notifyDataSetChanged();

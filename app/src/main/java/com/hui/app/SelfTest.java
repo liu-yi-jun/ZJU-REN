@@ -36,6 +36,8 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
     private TextView recheck;
     private ImageView resistanceStatues;
     private TextView toolbarTitle;
+    private Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +46,17 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initBar();
         initView();
+
+//         handler = new Handler();
+
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.e("send", "心跳包");
+//                ECBLE.writeBLECharacteristicValue("1", false);
+//                handler.postDelayed(this, 5000);
+//            }
+//        }, 5000);
     }
 
     @Override
@@ -63,8 +76,17 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
         ECBLE.onBLECharacteristicValueChange((String str,String strHex)-> runOnUiThread(()->{
             if(strHex.contains("2320503A")) { //# P:
                 LevelAndState levelAndState = new LevelAndState(strHex);
-                labBattery.setText("当前电量：" + (int) (levelAndState.getP() * 100) + "%");
-                float time = levelAndState.getP() * 4.2f / 60;
+                if(levelAndState.getP() * 100 > 100) {
+                    labBattery.setText("当前电量：" + 100 + "%");
+                }else {
+                    labBattery.setText("当前电量：" + (int) (levelAndState.getP() * 100) + "%");
+                }
+                float time;
+                if(levelAndState.getP() > 1) {
+                    time = 1 * 6;
+                }else {
+                    time = levelAndState.getP() * 6;
+                }
                 if (time > 1.0) {
                     labTime.setText(String.format("预计还可使用%.1fh", time));
                 } else {
@@ -91,15 +113,16 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
             @Override
             public void run() {
                 BlueItemDefine connectDevice = ECBLE.getConnectDevice();
-                labBleState.setText("蓝牙已连接");
-                labBleState.setTextColor(Color.parseColor("#453A68"));
+               labBleState.setText("蓝牙未连接");
+               labBleState.setTextColor(Color.parseColor("#ED9E57"));
                 toolbarTitle.setText(connectDevice.getBlueName());
                 sendCheck();
             }
-        }, 500);
+        }, 1500);
     }
 
     private void sendCheck() {
+        Log.e("sendCheck", "# 11 PR #");
         ECBLE.writeBLECharacteristicValue("# 11 PR #", false);
     }
 
@@ -111,6 +134,7 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
         ECBLE.onBLECharacteristicValueChange((str,strHex)->{});
         ECBLE.onBLEConnectionStateChange((ok,errCode,errMsg)->{});
         ECBLE.closeBLEConnection();
+//        handler.removeCallbacksAndMessages(null);
     }
 
 

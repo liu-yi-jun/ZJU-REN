@@ -247,6 +247,7 @@ public class DoctorMode extends AppCompatActivity implements View.OnClickListene
                     secondSharedPreferences.edit().putString("secondMode", secondJson).apply();
                 }
                 Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
+                finish();
                 break;
         }
     }
