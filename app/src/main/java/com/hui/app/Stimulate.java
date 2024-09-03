@@ -1,5 +1,6 @@
 package com.hui.app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -60,6 +61,7 @@ public class Stimulate extends AppCompatActivity implements View.OnClickListener
     private int countDown = 0;
     private Timer timer;
     private boolean isStart = false;
+    private boolean isShortCircuit = false;
 
 
     @Override
@@ -132,9 +134,14 @@ public class Stimulate extends AppCompatActivity implements View.OnClickListener
                     toStopStimulate();
                 }
             }
-            if(strHex.contains("2320532023")) { //# S # 短路
-                Util.showAlertRSDialog(this);
-                toStopStimulate();
+            if(strHex.contains("2320532023") && !isShortCircuit) { //# S # 短路
+                isShortCircuit = true;
+                Util.showAlertRSDialog(this, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        isShortCircuit = false;
+                    }
+                });
             }
         }));
     }

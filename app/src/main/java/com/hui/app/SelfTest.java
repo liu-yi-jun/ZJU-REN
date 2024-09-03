@@ -1,5 +1,6 @@
 package com.hui.app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -37,6 +38,7 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
     private ImageView resistanceStatues;
     private TextView toolbarTitle;
     private Handler handler;
+    private boolean isShortCircuit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,8 +106,14 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
                     }
                 }
             }
-            if(strHex.contains("2320532023")) { //# S # 短路
-                Util.showAlertRSDialog(this);
+            if(strHex.contains("2320532023") && !isShortCircuit) { //# S # 短路
+                isShortCircuit = true;
+                Util.showAlertRSDialog(this, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        isShortCircuit = false;
+                    }
+                });
             }
         }));
 
@@ -113,8 +121,8 @@ public class SelfTest extends AppCompatActivity implements View.OnClickListener 
             @Override
             public void run() {
                 BlueItemDefine connectDevice = ECBLE.getConnectDevice();
-               labBleState.setText("蓝牙未连接");
-               labBleState.setTextColor(Color.parseColor("#ED9E57"));
+                labBleState.setText("蓝牙已连接");
+                labBleState.setTextColor(Color.parseColor("#453A68"));
                 toolbarTitle.setText(connectDevice.getBlueName());
                 sendCheck();
             }

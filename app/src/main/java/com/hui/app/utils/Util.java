@@ -8,8 +8,9 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.hui.app.ECBLE;
 
+
 public class Util {
-    public static void showAlertRSDialog(Context context) {
+    public static void showAlertRSDialog(Context context, DialogInterface.OnClickListener callback) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("提示");
         builder.setMessage("设备发生短路异常，已经停止刺激。请检查问题后，按复位键复位设备");
@@ -19,6 +20,11 @@ public class Util {
                 // 确认按钮点击事件
                 ECBLE.writeBLECharacteristicValue("RS", false);
                 Toast.makeText(context, "短路复位已发送", Toast.LENGTH_SHORT).show();
+
+                // 调用回调函数
+                if (callback != null) {
+                    callback.onClick(dialog, which);
+                }
                 dialog.dismiss();
             }
         });

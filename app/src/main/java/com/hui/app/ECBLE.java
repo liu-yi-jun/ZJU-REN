@@ -364,7 +364,7 @@ public class ECBLE {
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
             byte[] bytes = characteristic.getValue();
-            Log.e("ble-receive","1" );
+            Log.e("ble-receive","接收" );
             if (bytes != null) {
                 String str = "";
                 if (Objects.equals(ecBLEChineseType, ECBLEChineseTypeGBK)) {
